@@ -42,7 +42,10 @@ add_executable(logfile_test LogFile_test.cc)
 target_link_libraries(logfile_test muduo_base)
 
 add_executable(logging_test Logging_test.cc)
-target_link_libraries(logging_test muduo_base)
+target_link_libraries(logging_test muduo_base Nanolog)
+
+add_executable(logging_nanolog_test Logging_nanolog_test.cc)
+target_link_libraries(logging_nanolog_test muduo_base Nanolog)
 
 add_executable(logstream_bench LogStream_bench.cc)
 target_link_libraries(logstream_bench muduo_base)

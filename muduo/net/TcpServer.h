@@ -104,7 +104,7 @@ class TcpServer : noncopyable
   const string name_;
   std::unique_ptr<Acceptor> acceptor_; // avoid revealing Acceptor
   std::shared_ptr<EventLoopThreadPool> threadPool_;
-  ConnectionCallback connectionCallback_;
+  ConnectionCallback connectionCallback_;//连接建立回调在acceptor的回调中是否就对应了readcb
   MessageCallback messageCallback_;
   WriteCompleteCallback writeCompleteCallback_;
   ThreadInitCallback threadInitCallback_;

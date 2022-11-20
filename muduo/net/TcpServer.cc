@@ -44,9 +44,9 @@ TcpServer::~TcpServer()
   for (auto& item : connections_)
   {
     TcpConnectionPtr conn(item.second);
-    item.second.reset();
-    conn->getLoop()->runInLoop(
-      std::bind(&TcpConnection::connectDestroyed, conn));
+    item.second.reset(); //将这个shared_ptr清空
+    conn->getLoop()->runInLoop( //交付个所处的循环
+      std::bind(&TcpConnection::connectDestroyed, conn)); 
   }
 }
 
@@ -71,7 +71,7 @@ void TcpServer::start()
 void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
 {
   loop_->assertInLoopThread();
-  EventLoop* ioLoop = threadPool_->getNextLoop();
+  EventLoop* ioLoop = threadPool_->getNextLoop();//这个不是做epoll的核心循环,而是做任务的循环
   char buf[64];
   snprintf(buf, sizeof buf, "-%s#%d", ipPort_.c_str(), nextConnId_);
   ++nextConnId_;
@@ -89,12 +89,12 @@ void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
                                           localAddr,
                                           peerAddr));
   connections_[connName] = conn;
-  conn->setConnectionCallback(connectionCallback_);
+  conn->setConnectionCallback(connectionCallback_); //果然TcpConnection的回调来源于TcpServer
   conn->setMessageCallback(messageCallback_);
   conn->setWriteCompleteCallback(writeCompleteCallback_);
   conn->setCloseCallback(
       std::bind(&TcpServer::removeConnection, this, _1)); // FIXME: unsafe
-  ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
+  ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));//对于涉及到注册到epoll的新事件,会加入到loop的任务队列中.
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr& conn)

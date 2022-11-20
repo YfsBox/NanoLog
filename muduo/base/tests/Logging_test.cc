@@ -3,6 +3,7 @@
 #include "muduo/base/ThreadPool.h"
 #include "muduo/base/TimeZone.h"
 
+
 #include <stdio.h>
 #include <unistd.h>
 
@@ -12,7 +13,7 @@ std::unique_ptr<muduo::LogFile> g_logFile;
 
 void dummyOutput(const char* msg, int len)
 {
-  g_total += len;
+  // g_total += len;
   if (g_file)
   {
     fwrite(msg, 1, len, g_file);
@@ -42,8 +43,10 @@ void bench(const char* type)
   }
   muduo::Timestamp end(muduo::Timestamp::now());
   double seconds = timeDifference(end, start);
-  printf("%12s: %f seconds, %d bytes, %10.2f msg/s, %.2f MiB/s\n",
-         type, seconds, g_total, n / seconds, g_total / seconds / (1024 * 1024));
+  /*printf("%12s: %f seconds, %d bytes, %10.2f msg/s, %.2f MiB/s\n",
+         type, seconds, g_total, n / seconds, g_total / seconds / (1024 * 1024));*/
+    printf("%12s: %f seconds, %10.2f msg/s \n",
+           type, seconds, n / seconds );
 }
 
 void logInThread()
@@ -64,6 +67,7 @@ int main()
   pool.run(logInThread);
   pool.run(logInThread);
 
+
   LOG_TRACE << "trace";
   LOG_DEBUG << "debug";
   LOG_INFO << "Hello";
@@ -73,7 +77,6 @@ int main()
   LOG_INFO << sizeof(muduo::LogStream);
   LOG_INFO << sizeof(muduo::Fmt);
   LOG_INFO << sizeof(muduo::LogStream::Buffer);
-
   sleep(1);
   bench("nop");
 

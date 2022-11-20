@@ -163,4 +163,7 @@ class EventLoop : noncopyable
 }  // namespace net
 }  // namespace muduo
 
+//对于任务队列的设置,如果有一个任务需要加入到某个loop中,由于在多线程的情况下,存在线程的的调度与切换,
+//对于从外部加入到某个loop运行的函数,倘若该loop的线程正在运行那么,就会直接执行,否则加入到队列,加入到factor队列之后
+//会在loop中每做完一个interation执行一次.
 #endif  // MUDUO_NET_EVENTLOOP_H

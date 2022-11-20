@@ -73,7 +73,7 @@ InetAddress::InetAddress(uint16_t portArg, bool loopbackOnly, bool ipv6)
     addr_.sin_port = sockets::hostToNetwork16(portArg);
   }
 }
-
+//根据ip,portArg获得表示address的结构体
 InetAddress::InetAddress(StringArg ip, uint16_t portArg, bool ipv6)
 {
   if (ipv6 || strchr(ip.c_str(), ':'))

@@ -152,6 +152,7 @@ class TcpConnection : noncopyable,
   // FIXME: creationTime_, lastReceiveTime_
   //        bytesReceived_, bytesSent_
 };
+//connection的回调主要由4个,连接建立与销毁,读与写.
 
 typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 

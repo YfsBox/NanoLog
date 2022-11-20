@@ -327,23 +327,22 @@ void TcpConnection::connectEstablished()
   setState(kConnected);
   channel_->tie(shared_from_this());
   channel_->enableReading();
-
   connectionCallback_(shared_from_this());
 }
 
-void TcpConnection::connectDestroyed()
+void TcpConnection::connectDestroyed()//往下调用channel的remove,果然还是非借助一个channel的接口
 {
   loop_->assertInLoopThread();
   if (state_ == kConnected)
   {
     setState(kDisconnected);
-    channel_->disableAll();
+    channel_->disableAll(); //将epoll事件上触发事件都设置成0
 
-    connectionCallback_(shared_from_this());
+    connectionCallback_(shared_from_this()); //这个回调是由server设置的
   }
   channel_->remove();
 }
-
+//messageCallback有什么作用呢?
 void TcpConnection::handleRead(Timestamp receiveTime)
 {
   loop_->assertInLoopThread();
@@ -412,10 +411,10 @@ void TcpConnection::handleClose()
   assert(state_ == kConnected || state_ == kDisconnecting);
   // we don't close fd, leave it to dtor, so we can find leaks easily.
   setState(kDisconnected);
-  channel_->disableAll();
+  channel_->disableAll(); //将channel设置为0事件,导致再接下来不会有对应的事件返回
 
   TcpConnectionPtr guardThis(shared_from_this());
-  connectionCallback_(guardThis);
+  connectionCallback_(guardThis); //这些都涉及到server
   // must be the last line
   closeCallback_(guardThis);
 }
@@ -426,4 +425,7 @@ void TcpConnection::handleError()
   LOG_ERROR << "TcpConnection::handleError [" << name_
             << "] - SO_ERROR = " << err << " " << strerror_tl(err);
 }
+
+
+//调用链,handleread => handleclose => closeCallback => destroyConnection
 

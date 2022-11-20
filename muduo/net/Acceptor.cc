@@ -34,8 +34,9 @@ Acceptor::Acceptor(EventLoop* loop, const InetAddress& listenAddr, bool reusepor
   acceptSocket_.setReusePort(reuseport);
   acceptSocket_.bindAddress(listenAddr);
   acceptChannel_.setReadCallback(
-      std::bind(&Acceptor::handleRead, this));
-}
+      std::bind(&Acceptor::handleRead, this));//在eventLoop中直接调用的是channel中的callback
+}//然而如果这个channel是归属于Acceptor的,而这个channel是在Acceptor内部设置的,也就是在构造函数中设置的
+//这个channel的回调也就来自handleread.
 
 Acceptor::~Acceptor()
 {
@@ -64,7 +65,7 @@ void Acceptor::handleRead()
     // LOG_TRACE << "Accepts of " << hostport;
     if (newConnectionCallback_)
     {
-      newConnectionCallback_(connfd, peerAddr);
+      newConnectionCallback_(connfd, peerAddr);//连接建立时附带的回调
     }
     else
     {

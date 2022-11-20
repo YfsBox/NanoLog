@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 project(muduo C CXX)
+add_executable(muduo main.cpp)
 
 enable_testing()
 
@@ -21,16 +22,16 @@ set(CXX_FLAGS
  -Wall
  -Wextra
  -Werror
- -Wconversion
+# -Wconversion
  -Wno-unused-parameter
- -Wold-style-cast
+ # -Wold-style-cast
  -Woverloaded-virtual
  -Wpointer-arith
- -Wshadow
+ # -Wshadow
  -Wwrite-strings
  -march=native
  # -MMD
- -std=c++11
+ -std=c++17
  -rdynamic
  )
 if(CMAKE_BUILD_BITS EQUAL 32)
@@ -38,8 +39,8 @@ if(CMAKE_BUILD_BITS EQUAL 32)
 endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   list(APPEND CXX_FLAGS "-Wno-null-dereference")
-  list(APPEND CXX_FLAGS "-Wno-sign-conversion")
-  list(APPEND CXX_FLAGS "-Wno-unused-local-typedef")
+#  list(APPEND CXX_FLAGS "-Wno-sign-conversion")
+#  list(APPEND CXX_FLAGS "-Wno-unused-local-typedef")
   list(APPEND CXX_FLAGS "-Wthread-safety")
   list(REMOVE_ITEM CXX_FLAGS "-rdynamic")
 endif()
@@ -105,6 +106,7 @@ message(STATUS "CXX_FLAGS = " ${CMAKE_CXX_FLAGS} " " ${CMAKE_CXX_FLAGS_${BUILD_T
 
 add_subdirectory(muduo/base)
 add_subdirectory(muduo/net)
+add_subdirectory(muduo/runtime)
 
 if(MUDUO_BUILD_EXAMPLES)
   add_subdirectory(contrib)
